@@ -24,15 +24,17 @@ class PostController extends Controller
 
     {
 
-        $posts = Post::latest()->get();
-        $archives = Post::selectRaw('year(created_at)year , monthname(created_at) month, count(*) published')
+        $posts = Post::latest();
 
-            ->groupBy('year', 'month')
-            ->orderByRaw('min(created_at) desc')
-            ->get()
-            ->toArray();
-        dd($archives);
-        return view('posts.index',compact('posts','archives'));
+        if ($request = request(['month', 'year'])) {
+            $posts->filter($request);
+        }
+
+        $posts = $posts->get();
+
+       // $posts = Post::latest()->get();
+
+        return view('posts.index',compact('posts'));
 
 
 
